@@ -10,10 +10,12 @@ from . import isce_read_write
 
 def read_licsbas_file(bin_filename, xlen, ylen, bbox, verbose=False):
     """
+    Read the binary file created by the LiCSBAS velocity calculation.
+
     :param bin_filename: string, filename
     :param xlen: integer, size of x-array, likely read this from the LICSBAS logs
     :param ylen: integer, size of y-array, likely read this from the LICSBAS logs
-    :param bbox: list of 4 integers, [W, E, S, N] in degrees, likely read this from the LICSBAS logs
+    :param bbox: list of 4 floats, [W, E, S, N] in degrees, likely read this from the LICSBAS logs
     :param verbose: default False
     :return: xarray (1d), yarray (1d), zdata (2d)
     """

@@ -220,6 +220,10 @@ def timing_plots(results_file, output_plot='timing.png'):
     datestrs, flight_directions, tracks = np.loadtxt(results_file, usecols=(1, 3, 4), unpack=True,
                                                      dtype={'names': ('dts', 'direction', 'track'),
                                                             'formats': ('U10', 'U9', float)})
+    if np.size(datestrs) == 1:  # convert the arrays into iterable if a single hit is returned.
+        datestrs = datestrs.ravel()
+        flight_directions = flight_directions.ravel()
+        tracks = tracks.ravel()
 
     for datestr, direction, track in zip(datestrs, flight_directions, tracks):
         acq_date = dt.datetime.strptime(datestr, "%Y-%m-%d")
