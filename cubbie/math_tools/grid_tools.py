@@ -22,7 +22,15 @@ def clip_array_by_bbox(x, y, array1, bbox, verbose=True):
     original_bbox = (np.min(x), np.max(x), np.min(y), np.max(y))
     if bbox[0] < original_bbox[0] or bbox[1] > original_bbox[1] or \
             bbox[2] < original_bbox[2] or bbox[3] > original_bbox[3]:  # sanity check
-        print("ERROR! invalid bounding box provided.")
+        print("ERROR! invalid bounding box provided:")
+    if bbox[0] < original_bbox[0]:
+        print("    requested longitude %f less than provided %f" % (bbox[0], original_bbox[0]))
+    if bbox[1] > original_bbox[1]:
+        print("    requested longitude %f greater than provided %f" % (bbox[1], original_bbox[1]))
+    if bbox[2] < original_bbox[2]:
+        print("    requested latitude %f less than provided %f" % (bbox[2], original_bbox[2]))
+    if bbox[3] > original_bbox[3]:
+        print("    requested latitude %f greater than provided %f" % (bbox[3], original_bbox[3]))
     if verbose:
         print("  Original grid and bbox: ", np.shape(array1), original_bbox)
     find_w = np.argmin(np.abs(x-bbox[0]))

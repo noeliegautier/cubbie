@@ -8,27 +8,28 @@ import numpy as np
 from . import isce_read_write
 
 
-def read_licsbas_file(bin_filename, xlen, ylen, bbox, verbose=False):
+def read_licsbas_file(bin_filename, shape_tuple, bbox, verbose=False):
     """
     Read the binary file created by the LiCSBAS velocity calculation.
 
     :param bin_filename: string, filename
-    :param xlen: integer, size of x-array, likely read this from the LICSBAS logs
-    :param ylen: integer, size of y-array, likely read this from the LICSBAS logs
+    :param shape_tuple: (integer, integer), size of rows,columns, likely read this from the LICSBAS logs
     :param bbox: list of 4 floats, [W, E, S, N] in degrees, likely read this from the LICSBAS logs
     :param verbose: default False
     :return: xarray (1d), yarray (1d), zdata (2d)
     """
+    print("Reading file %s " % bin_filename)
+    ylen, xlen = shape_tuple[0], shape_tuple[1]
 
     data = np.fromfile(bin_filename, dtype=np.float32)
     data = data.reshape((ylen, xlen))
     yinc = (bbox[3] - bbox[2]) / ylen
     xinc = (bbox[1] - bbox[0]) / xlen
+    data = np.flipud(data)  # required for licsbas
 
     if verbose:
-        print("Reading file %s" % bin_filename)
         print("  Resulting size: (%d, %d)" % (ylen, xlen))
         print("  Increments: %.5f, %.5f" % (xinc, yinc))
 
-    xarr, yarr = isce_read_write.get_xarray_yarray_from_shape(bbox[0], bbox[2], xinc, -yinc, xlen, ylen)
+    xarr, yarr = isce_read_write.get_xarray_yarray_from_shape(bbox[0], bbox[2], xinc, yinc, xlen, ylen)
     return xarr, yarr, data
