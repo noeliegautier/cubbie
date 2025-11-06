@@ -2,7 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_raster_simple(x, y, data, plotname, cmap='Spectral', vmin=None, vmax=None, figsize=(10, 8)):
+def plot_raster_simple(x, y, data, plotname, cmap='Spectral',
+                       vmin=None,
+                       vmax=None,
+                       title=None,
+                       figsize=(10, 8)):
     """
     General function to visualize a raster and save it into PNG.
 
@@ -13,6 +17,7 @@ def plot_raster_simple(x, y, data, plotname, cmap='Spectral', vmin=None, vmax=No
     :param cmap: default 'Spectral'
     :param vmin: float, optional, None
     :param vmax: float, optional, None
+    :param title: string, optional, None
     :param figsize: tuple of (xwidth, yheight) values
     :return:
     """
@@ -21,6 +26,8 @@ def plot_raster_simple(x, y, data, plotname, cmap='Spectral', vmin=None, vmax=No
     plt.figure(figsize=figsize, dpi=300)
     X, Y = np.meshgrid(x, y)
     plt.pcolormesh(X, Y, data, cmap=cmap, vmin=vmin, vmax=vmax)
+    if title:
+        plt.title(title)
     plt.colorbar()
     plt.savefig(plotname)
     plt.close()

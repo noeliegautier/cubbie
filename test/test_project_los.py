@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-from cubbie.insar_gps_combo import los_projection_tools
+from cubbie.legacy.insar_gps_combo import los_projection_tools
 import numpy as np
 
 

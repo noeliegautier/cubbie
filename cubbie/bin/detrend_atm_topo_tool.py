@@ -11,7 +11,8 @@ import numpy as np
 import argparse
 import scipy.linalg
 from tectonic_utils.read_write import netcdf_read_write as rw
-from cubbie.math_tools import plots, mask_and_interpolate, grid_tools
+from cubbie.math_tools import mask_and_interpolate, grid_tools
+import matplotlib.pyplot as plt
 
 help_message = "Perform detrending and topo-correlated removal on interferogram files. \nUsage: " \
                "detrend_atm_topo_tool.py --data_file unw_phase.grd --outname detrended_phase.grd"
@@ -81,10 +82,10 @@ def correct_for_topo_trend(phasedata, demdata, exp_dict):
     corrected_decarray_1d = corrected_array_1d[np.where(~np.isnan(full_phase_array_1d))]
     print("Best-fitting Slope: %f " % float(coef[0]))
     if exp_dict["produce_plots"]:
-        plots.before_after_images(phasedata, corrected_array_2d,
-                                  outfilename=exp_dict['outname'].split('.grd')[0] + '_before_after_topo.png')
-        plots.linear_topo_phase_plot(phase_array_1d, demarray_1d, corrected_decarray_1d,
-                                     outfilename=exp_dict['outname'].split('.grd')[0] + '_phase_topo.png')
+        before_after_images(phasedata, corrected_array_2d,
+                            outfilename=exp_dict['outname'].split('.grd')[0] + '_before_after_topo.png')
+        linear_topo_phase_plot(phase_array_1d, demarray_1d, corrected_decarray_1d,
+                               outfilename=exp_dict['outname'].split('.grd')[0] + '_phase_topo.png')
     return corrected_array_2d
 
 
@@ -109,8 +110,8 @@ def correct_for_plane(xdata, ydata, phasedata, exp_dict):
     full_corrected_phase = np.subtract(full_phase, full_phase_model)
     corrected_phase_2d = np.reshape(full_corrected_phase, np.shape(phasedata))
     if exp_dict["produce_plots"]:
-        plots.before_after_images(phasedata, corrected_phase_2d,
-                                  outfilename=exp_dict['outname'].split('.grd')[0] + '_before_after_planar.png')
+        before_after_images(phasedata, corrected_phase_2d,
+                            outfilename=exp_dict['outname'].split('.grd')[0] + '_before_after_planar.png')
     return corrected_phase_2d
 
 
@@ -125,6 +126,51 @@ def defensive_checks(zdata, aux_array, metadata='Correlation'):
     if np.sum(np.isnan(zdata)) == np.shape(zdata)[0] * np.shape(zdata)[1]:
         raise ValueError("Error! Phase contains only nans")
     print('Defensive checks passed for '+metadata+'-based processing')
+    return
+
+
+def before_after_images(before_phase, after_phase, outfilename):
+    """
+    Produce a comparison plot of before-and-after images of unwrapped phase.
+
+    :param before_phase: 2d raster data
+    :param after_phase: 2d raster data
+    :param outfilename: string
+    """
+    plt.figure(figsize=(12, 7), dpi=300)
+    plt.subplot(1, 2, 1)
+    plt.imshow(before_phase, cmap='viridis', vmin=np.nanmin(before_phase), vmax=np.nanmax(after_phase))
+    plt.title('Before Correction')
+    plt.subplot(1, 2, 2)
+    plt.imshow(after_phase, cmap='viridis', vmin=np.nanmin(before_phase), vmax=np.nanmax(after_phase))
+    plt.title('After Correction')
+    cb = plt.colorbar()
+    cb.set_label("Unwrapped Phase (radians)", size=12)
+    print("Saving figure %s " % outfilename)
+    plt.savefig(outfilename)
+    plt.close()
+    return
+
+
+def linear_topo_phase_plot(phase_array_1d, dem_array_1d, corrected_phase_1d, outfilename):
+    """
+    Plot topography and phase as x-y scatter plot.
+
+    :param phase_array_1d: 1d array of phase values
+    :param dem_array_1d: 1d array of DEM values
+    :param corrected_phase_1d: 1d array of modified phase values
+    :param outfilename: string
+    """
+    plt.figure(figsize=(8, 6), dpi=300)
+    plt.plot(dem_array_1d, phase_array_1d, '.', label='Before correction')
+    plt.plot(dem_array_1d, corrected_phase_1d, '.r', alpha=0.15, label='After correction')
+    plt.ylabel('phase')
+    plt.xlabel('topo')
+    plt.title('Initial and Corrected Phase vs. Topography')
+    plt.legend()
+    print("Saving figure %s " % outfilename)
+    plt.savefig(outfilename)
+    plt.close()
     return
 
 
