@@ -45,7 +45,7 @@ cd $DOWN_DIR
 wget https://s1qc.asf.alaska.edu/aux_poeorb
 
 # # Get the list of files
-grep -E 'S1[A-B]_OPER_AUX_POEORB_OPOD_[0-9]{8}T[0-9]{6}_V[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}.EOF' -o aux_poeorb > list_of_addresses.txt
+grep -E 'S1[A|B|C|D]_OPER_AUX_POEORB_OPOD_[0-9]{8}T[0-9]{6}_V[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}.EOF' -o aux_poeorb > list_of_addresses.txt
 
 # # Wget all the files
 while read p; do
