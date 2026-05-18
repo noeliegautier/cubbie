@@ -15,6 +15,8 @@ echo "Downloading rapid orbits to: $(pwd)"
 
 wget -q -O aux_resorb https://s1qc.asf.alaska.edu/aux_resorb/
 
+# NOTE: Syntax of date manipulation only seems to work on Linux.
+# Would be different for a Mac or PC doing processing.
 LIMIT_DATE=$(date -u -d "21 days ago" +%Y%m%d)
 echo "Downloading files from $LIMIT_DATE up to today..."
 
